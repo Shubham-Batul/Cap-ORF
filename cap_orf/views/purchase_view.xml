@@ -60,6 +60,11 @@
                                     <field name="subtotal"/>
                                 </tree>
                             </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="tax_totals" string="Total" colspan="2" widget="monetary"
+                                       readonly="1"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -78,7 +83,7 @@
               name="ORF"/>
 
     <menuitem id="menu_purchase_orf"
-              name="Vendor"
+              name="Order Request Form"
               parent="menu_purchase_orf_root"
               action="action_purchase_orf"/>
 

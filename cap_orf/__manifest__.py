@@ -6,8 +6,8 @@
     'data':[
         'security/ir.model.access.csv',
         'data/sequence.xml',
-        # 'views/order_line.xml',
         'views/purchase_view.xml',
+        'views/order_line.xml',
         'views/purchase_inherit.xml',
         'views/portal.xml',
     ],

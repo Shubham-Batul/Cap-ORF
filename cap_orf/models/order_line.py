@@ -18,3 +18,5 @@ class OrderLine(models.Model):
     def onchange_subtotal_price(self):
         if self.unit_price:
             self.subtotal = self.unit_price * self.quantity
+
+

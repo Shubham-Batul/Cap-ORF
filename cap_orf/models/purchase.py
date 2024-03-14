@@ -14,6 +14,7 @@ class PurchaseORF(models.Model):
                                           string='DESTINATION DETAIL')
     order_line_ids = fields.One2many(comodel_name='order.line', inverse_name='purchase_id',
                                      string='Order Line')
+    tax_totals = fields.Float(compute='_compute_orf_tax_totals')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('orf_in_progress', 'ORF InProgress'),
@@ -56,6 +57,24 @@ class PurchaseORF(models.Model):
                 'price_unit': line.unit_price,
             }
             self.env['purchase.order.line'].create(rfq_line_vals)
+
+    # @api.depends('order_line_ids.subtotal')
+    # def _compute_orf_tax_totals(self):
+    #     for order in self:
+    #         if self.order_line_ids:
+    #             for record in order.order_line_ids:
+    #                 subtotal_total = 0.0
+    #                 subtotal_total = subtotal_total + record.subtotal
+    #                 self.tax_totals = subtotal_total
+    #         else:
+    #             self.tax_totals = 0.0
+    @api.depends('order_line_ids.subtotal')
+    def _compute_orf_tax_totals(self):
+        for order in self:
+            subtotal_total = 0.0
+            for record in order.order_line_ids:
+                subtotal_total += record.subtotal
+            order.tax_totals = subtotal_total
 
 
 class PurchaseInherit(models.Model):
