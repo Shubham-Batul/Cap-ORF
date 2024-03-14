@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_my_home" name="orf_purchase" customize_show="True"
+              inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">ORF Purchase</t>
+                <t t-set="url" t-value="'/my/ORF_Purchase'"/>
+                <t t-set="placeholder_count" t-value="'orf_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'list_view_orf_purchase'" class="breadcrumb-item text-muted">ORF Purchase</li>
+            <div t-if="searchbar_sorting" class="offset-9 text-muted">
+                <span class="small me-1 navbar-text">Sort By:</span>
+                <div class="btn-group">
+                    <button id="portal_searchbar_sortby" data-bs-toggle="dropdown"
+                            class="btn btn-secondary btn-sm dropdown-toggle">
+                        <t t-esc="searchbar_sorting[sortby].get('label', 'Newest')"/>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="portal_searchbar_sortby">
+                        <t t-foreach="searchbar_sorting" t-as="option">
+                            <a t-att-href="request.httprequest.path + '?' + keep_query('*', sortby=option)"
+                               t-attf-class="dropdown-item#{sortby == option and ' active' or ''}">
+                                <span t-esc="searchbar_sorting[option].get('label')"/>
+                            </a>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <li t-if="page_name == 'orf_purchase_form_view'" class="breadcrumb-item text-muted">
+                <a href="/my/ORF_Purchase">ORF Purchase</a>
+                /
+                ORF Purchase
+                <span t-field="orf.name"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_layout_orf_purchase" name="Portal Layout">
+        <t t-call="portal.portal_layout">
+            <div class="container">
+                <t t-call="portal.portal_table">
+                    <thead>
+                        <tr class="active">
+                            <th>Name</th>
+                            <th class="text-end">Vendor</th>
+                            <th class="text-end">PO Date</th>
+                            <th class="text-end">State</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="orf_purchase" t-as="orf">
+                            <tr>
+                                <td>
+                                    <a t-attf-href="/my/ORF_Purchase/#{orf.id}">
+                                        <t t-out="orf.name"/>
+                                    </a>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="orf.vendor_id.name"/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="orf.po_date"/>
+                                </td>
+                                <td class="tx_status text-end">
+                                    <t t-if="orf.state == 'draft'">
+                                        <span class="badge rounded-pill text-bg-info">
+                                            <span>Draft</span>
+                                        </span>
+                                    </t>
+                                    <t t-if="orf.state == 'orf_in_progress'">
+                                        <span class="badge rounded-pill text-bg-warning">
+                                            <span class="d-none d-md-inline">ORF InProgress</span>
+                                        </span>
+                                    </t>
+                                    <t t-if="orf.state == 'confirm'">
+                                        <span class="badge rounded-pill text-bg-success">
+                                            <span class="d-none d-md-inline">Confirm</span>
+                                        </span>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="form_view_portal_orf_purchase" inherit_id="portal.portal_sidebar">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <t t-if="page_name == 'orf_purchase_form_view'">
+                <section style="background-color: #eee;">
+                    <div style="height:17px;"/>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="card-body">
+                                <h2 class="my-3 text-center">
+                                    <span t-field="orf.order_line_ids.subtotal" t-options="{'widget': 'monetary'}"/>
+                                </h2>
+                                <hr/>
+                                <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
+                                    <div class="btn-group flex-grow-1 me-1 mb-1">
+                                        <a class="btn btn-secondary o_download_btn"
+                                           title="Download">
+                                            <i class="fa fa-download"/>
+                                            Download
+                                        </a>
+                                    </div>
+                                    <div class="btn-group flex-grow-1 mb-1">
+                                        <a class="btn btn-secondary o_print_btn o_portal_invoice_print"
+                                           title="Print" target="_blank">
+                                            <i class="fa fa-print"/>
+                                            Print
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <span t-field="orf.name"/>
+                                </div>
+                                <!--                                <li t-if="orf.user_id" class="list-group flex-grow-1">-->
+                                <!--                                    <div class="small mb-1 text-start">-->
+                                <!--                                        <strong class="text-muted">Salesperson</strong>-->
+                                <!--                                    </div>-->
+                                <!--                                    <div class="row flex-nowrap">-->
+                                <!--                                        <div class="col flex-grow-0 pe-2">-->
+                                <!--                                            <img class="rounded-circle mr4 float-start o_portal_contact_img"-->
+                                <!--                                                 t-att-src="image_data_uri(orf.user_id.avatar_1024)"-->
+                                <!--                                                 alt="Contact"/>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="col ps-0" style="min-width: 150px">-->
+                                <!--                                            <span t-field="orf.user_id"-->
+                                <!--                                                  t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>-->
+                                <!--                                            <a href="#discussion" class="small">-->
+                                <!--                                                <i class="fa fa-comment"></i>-->
+                                <!--                                                Send message-->
+                                <!--                                            </a>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                </li>-->
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-9">
+                                            <h2 id="subscription_order" class="mb-0">ORF Purchase
+                                                <i>
+                                                    <t t-out="orf.name"/>
+                                                </i>
+                                            </h2>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div style="height:15px;"/>
+                                    <div class="row" id="pricing_product">
+                                        <div class="col-4">
+                                            <h2>Products</h2>
+                                        </div>
+                                    </div>
+                                    <div style="height:10px;"/>
+                                    <table class="table">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="col">Product</th>
+                                                <th class="col-md-auto">Quantity</th>
+                                                <th class="col-md-auto">Unit Price</th>
+                                                <th class="col-md-auto">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="subtotal_total" t-value="0.0"/>
+                                            <t t-foreach="orf.order_line_ids" t-as="order_line">
+                                                <tr>
+                                                    <td>
+                                                        <t t-out="order_line.product_id.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-out="order_line.quantity"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-out="order_line.unit_price"/>
+                                                    </td>
+                                                    <td>
+<!--                                                        <span t-field="order_line.subtotal"-->
+<!--                                                              t-options="{'widget': 'monetary'}"/>-->
+<!--                                                        <t t-set="subtotal_total"-->
+<!--                                                           t-value="subtotal_total + order_line.subtotal"/>-->
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+
+<!--                                    <div class="row">-->
+<!--                                        <div class="offset-7 col-2">-->
+<!--                                            <strong style="text-align: center;">Total</strong>-->
+<!--                                        </div>-->
+<!--                                        <div class="col-2">-->
+<!--                                            <div t-esc="subtotal_total"/>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div id="chatter_section" class="offset-3 col-lg-8">
+                    <h2>History</h2>
+                    <t t-call="portal.message_thread">
+                        <t t-set="object" t-value="orf"/>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>
