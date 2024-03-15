@@ -5,6 +5,7 @@
     'depends':['base','product','purchase','portal','mail'],
     'data':[
         'security/ir.model.access.csv',
+        'security/security.xml',
         'data/sequence.xml',
         'views/purchase_view.xml',
         'views/order_line.xml',

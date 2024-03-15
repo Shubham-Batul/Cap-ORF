@@ -5,7 +5,7 @@
         <field name="name">Product</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.product</field>
-        <field name="view_mode">tree,form,kanban</field>
+        <field name="view_mode">kanban,tree,form</field>
     </record>
 
     <menuitem id="menu_products"
@@ -14,17 +14,20 @@
               action="action_product_line"/>
 
 
-    <record id="action_vendor_line" model="ir.actions.act_window">
+    <record id="action_vendor_view" model="ir.actions.act_window">
         <field name="name">Vendor</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">res.partner</field>
-        <field name="view_mode">tree,form,kanban</field>
+        <field name="view_mode">kanban,tree,form,search</field>
+        <field name="context">{'search_default_supplier':1,'default_supplier_rank':1}</field>
+        <field name="domain">[('supplier_rank','>', 0)]</field>
     </record>
 
-    <menuitem id="menu_vendor_line"
+
+    <menuitem id="menu_vendor_menu"
               name="Vendor"
               parent="menu_purchase_orf_root"
-              action="action_vendor_line"
+              action="action_vendor_view"
               sequence="30"/>
 
 </odoo>
